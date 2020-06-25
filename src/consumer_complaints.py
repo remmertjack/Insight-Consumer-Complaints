@@ -53,7 +53,7 @@ def write_output_file(complaints, output_file):
     # output_file = r'tests\my_test\output\report.csv'
     with open(output_file, 'w', encoding='UTF-8') as out_f:
         # Write header of the file
-        out_f.write('product,year,total_complaints,total_companies,highest_percentage\n')
+        #out_f.write('product,year,total_complaints,total_companies,highest_percentage\n')
         
         for product_year in sorted(complaints.items()):
             prod_yr = product_year[0].split('--')

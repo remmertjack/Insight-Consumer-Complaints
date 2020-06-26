@@ -1,5 +1,4 @@
 # Insight Data Engineering: Consumer Complaints Challenge
-******
 
 This GitHub repository contains my solution for the Fall 2020 Insight Data Engineering Fellowship [coding challenge](https://github.com/insightdatascience/consumer_complaints).
 

@@ -81,10 +81,10 @@ def write_output_file(complaints, output_file):
     """
     # Write the output file
     ### FOR TESTING
-    # output_file = r'tests\my_test\output\report.csv'
+    # output_file = r'output/report.csv'
     with open(output_file, 'w', encoding='UTF-8') as out_f:
         # Write header of the file
-        # out_f.write('product,year,total_complaints,total_companies,highest_percentage\n')
+        out_f.write('product,year,total_complaints,total_companies,highest_percentage\n')
         
         for product_year in sorted(complaints.items()):
             prod_yr = product_year[0].split('--')
@@ -121,7 +121,7 @@ def compile_consumer_complaints(input_file, output_file):
     """
     firms = dict()
     ### FOR TESTING
-    # input_file = r'tests\my_test\input\complaints.csv'
+    # input_file = r'input/complaints.csv'
     num_lines = 0
     with open(input_file, 'r', encoding='UTF-8') as inp_f:
         record = inp_f.readline() # header 
@@ -146,15 +146,15 @@ def compile_consumer_complaints(input_file, output_file):
             # everywhere.
             semi_c_record = record.replace(",, ", "; ") # spelling mistakes
             # for all commas in record, but not as the csv, i.e. ,,
-            semi_c_record = semi_c_record.replace(", ", "; ")
-            semi_c_record = semi_c_record.replace('\xa0','') # for special chars
+            semi_c_record = semi_c_record.replace(", ", "; ") 
+            #semi_c_record = semi_c_record.replace('\xa0','') # for special chars
             semi_c_record = semi_c_record.replace(',",', ';",')
             i=0
             while (i<5):
                 # create our own BREAK for any missing values
                 semi_c_record = semi_c_record.replace(",,",",BREAK,")
                 i+=1
-            cl_record = semi_c_record.split(",")
+            cl_record = semi_c_record.split(",") # split on commas
                 
             year = cl_record[0][:4]
             product = cl_record[1].lower().replace("; ",", ")
@@ -166,6 +166,10 @@ def compile_consumer_complaints(input_file, output_file):
                 company = cl_record[-12].lower() +','+ company
             if (company == 'llc.' or company == 'llc' or company == 'llc,'
                 or company =='llc."' or company == 'llc"' or company == 'llc,"'):
+                company = cl_record[-12].lower() +','+ company
+            # if it ends a double quote and doesn't start with one, but the
+            # previous object does, it must be a company with a comma in it
+            if (company[-1] == '"' and company[0]!='"' and cl_record[-12][0]=='"'):
                 company = cl_record[-12].lower() +','+ company
 
             complaint_id = cl_record[-1]
@@ -202,7 +206,7 @@ def compile_consumer_complaints(input_file, output_file):
                 print('Number of records processed: '
                       +str(num_lines//10**6)+' million')
                
-    print('All Records processed. Total of '
+    print('All records processed. Total of '
           +str(num_lines)+' records.')
     complaints = product_stats(firms)
     write_output_file(complaints,output_file)

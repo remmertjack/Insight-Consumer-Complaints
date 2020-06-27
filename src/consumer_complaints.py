@@ -81,7 +81,7 @@ def write_output_file(complaints, output_file):
     """
     # Write the output file
     ### FOR TESTING
-    # output_file = r'output/report3.csv'
+    # output_file = r'output/report.csv'
     with open(output_file, 'w', encoding='UTF-8') as out_f:
         # Write header of the file
         # out_f.write('product,year,total_complaints,total_companies,highest_percentage\n')

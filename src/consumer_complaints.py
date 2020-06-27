@@ -30,16 +30,18 @@ def read_and_clean_input_file(input_file):
     Parameters
     ----------
     input_file : csv
-        Input file of data. See beginning of script for a summary
+        Input file of data. See beginning of script for a summary.
 
     Returns
     -------
     firms : dictionary
-        DESCRIPTION.
+        Contains a product-year key in the form of xxxx--YYYY and a nested 
+        dictionary with a company key and total number of complaints filed
+        against them for said product and year.
     num_lines : int
-        Number of records processed
+        Number of records processed.
     num_errors : int
-        Number of Errors found
+        Number of Errors found.
 
     """
     firms = dict()
@@ -71,10 +73,9 @@ def read_and_clean_input_file(input_file):
             semi_c_record = record.replace(",, ", "; ") # spelling mistakes
             # for all commas in record, but not as the csv, i.e. ,,
             semi_c_record = semi_c_record.replace(", ", "; ") 
-            #semi_c_record = semi_c_record.replace('\xa0','') # for special chars
             semi_c_record = semi_c_record.replace(',",', ';",')
             i=0
-            while (i<5):
+            while (i<2):
                 # create our own BREAK for any missing values
                 semi_c_record = semi_c_record.replace(",,",",BREAK,")
                 i+=1
@@ -100,9 +101,17 @@ def read_and_clean_input_file(input_file):
             key_record = product+'--'+year
             key_ = ''.join(key_record)
             
-            # if complaint with product-year in complaints, then add 1
-            # else create the instance and set it equal to 1
-            if year!='' and product!='' and company!='':
+            # first check to see if company is blank or equal to 'break'
+            if (company==' ' or company=='break'):
+                # if record is empty, do nothing
+                if record == ',,,,,,,,,,,,,,,,,\n' or record =='':
+                    pass
+                # else if record is not empty, then print an error
+                else:
+                    print('Error with Complaint ID: ' +str(complaint_id))
+                    num_errors+=1
+                
+            else:
                 # if complaint in firms, find the company, add 1
                 if key_ in firms:
                     if company in firms[key_]:
@@ -117,18 +126,15 @@ def read_and_clean_input_file(input_file):
                 else:
                     firm_record = {key_: {company:1} }
                     firms.update(firm_record)
-            else:
-                if record != ',,,,,,,,,,,,,,,,,\n' and record !='':
-                    print('Error with Complaint ID:' +str(complaint_id))
-                    num_errors+=1
-                else:
-                    pass
-            record = inp_f.readline()
+                    
             # Progress Report
             num_lines +=1
             if num_lines % 10**6 ==0:
                 print('Number of records processed: '
                       +str(num_lines//10**6)+' million')
+            # read next line
+            record = inp_f.readline()
+                
     return firms, num_lines, num_errors
 
 def product_stats(firm_dict):
@@ -186,10 +192,10 @@ def write_output_file(complaints, output_file):
     Parameters
     ----------
     complaints : dictionary
-        See product_stats complaints for definition
+        See product_stats complaints for definition.
         
     output_file: csv
-        Output file of aggregated data. See beginning of script for example
+        Output file of aggregated data. See beginning of script for example.
 
     Returns
     -------
@@ -230,10 +236,10 @@ def compile_consumer_complaints(input_file, output_file):
     Parameters
     ----------
     input_file : csv
-        Input file of data. See beginning of script for a summary
+        Input file of data. See beginning of script for a summary.
         
     output_file: csv
-        Output file of aggregated data. See beginning of script for example
+        Output file of aggregated data. See beginning of script for example.
 
     Returns
     -------

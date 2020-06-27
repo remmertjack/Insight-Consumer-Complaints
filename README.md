@@ -17,14 +17,12 @@ debt collection,2019,1,1,100
 For more informaiton on the data, [click here](https://cfpb.github.io/api/ccdb/fields.html).
 
 ## Process
-The `consumer_complaints.py` script takes an input and output file path and then executes a wrapper function, `compile_consumer_complaints`.
+The `consumer_complaints.py` script takes an input and output file path and then executes a wrapper function, `compile_consumer_complaints`. This wrapper function executes the three main functions used to compile the `report.csv` as requested and provides progress reports along the way in the following order:
 
-This wrapper function, first reads the input file line by line, cleans the data by removing excess commas and quotes and replacing them with semi-colons, and then creates a dictionary containing each product-year combination and an inner dictionary containting a company and the number of complaints filed against them for said product-year. The program will print a *Progress Report* for every million lines and once more  when the program has finished reading every record.
-
-Next, the `product_stats` function runs, executed within `compile_consumer_complaints`, to compile the statistics mentioned above and creates a dictionary containing the product-year combination and the required stats.  This is performed with a *for loop* over each product-year combination and sums the total number of complaints, counts the total number of unique companies per proudct-year using the length of said inner dictionary, and finds the highest percentage of complaints per product-year by taking the maxium value, dividng by the sum of total complaints, and rounded as required.
-
-Finally, the `write_output_file` function, executed within `compile_consumer_complaints`, writes the data to a csv given the output file. First, it builds the line using 
-string concatenation based on the output from `product_stats` and then it writes it to said file.
+1. The `read_and_clean_input_file` function reads the input file line by line, cleans the data by removing excess commas and quotes, extracts the relevant data, and then creates a dictionary containing each product-year combination and an inner dictionary containting a company and the number of complaints filed against them for said product-year. This is performed with a *while loop* that continues to run until no more records are found. The program will print a *Progress Report* for every million records. If there is an error with a record, the program will print `Error with Complaint Id: XXXX` to notify the user.
+1. Print the total number of records found and the total number of errors found. If there are no errors, it will print `No errors found.`.
+1. The `product_stats` function runs to compile the statistics mentioned above and creates a dictionary containing the product-year combination and the required stats.  This is performed with a *for loop* over each product-year combination and sums the total number of complaints, counts the total number of unique companies per proudct-year using the length of said inner dictionary, and finds the highest percentage of complaints per product-year by taking the maxium value, dividng by the sum of total complaints, and rounded as required.
+1. The `write_output_file` function writes the data to a csv given the output file. First, it builds the line using string concatenation based on the output from `product_stats` and then it writes it to said file.
 
 For more comments on each individual function, please see the code itself.
 
